@@ -5,53 +5,47 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: frmonfre <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/03/15 15:17:23 by frmonfre          #+#    #+#             */
-/*   Updated: 2023/03/15 15:17:24 by frmonfre         ###   ########.fr       */
+/*   Created: 2023/03/16 10:01:57 by frmonfre          #+#    #+#             */
+/*   Updated: 2023/03/21 08:41:26 by frmonfre         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 #include "libft/libft.h"
 
-int     pot(int a, int b)
+void	sig_handler_srv(int signum, siginfo_t *info, void *context)
 {
-    if (b == 0)
-        return (1);
-    return (a * pot(a, b - 1));
+	static int	byte = 0;
+	static int	i = 0;
+	static int	pot[8] = {1, 2, 4, 8, 16, 32, 64, 128};
+
+	if (signum == SIGUSR1)
+		byte += pot[i];
+	i++;
+	if (i == 8)
+	{
+		ft_putchar_fd(byte, 1);
+		if (byte == '\0')
+		{
+			write(1, "\n", 1);
+			kill(info->si_pid, SIGUSR1);
+		}
+		byte = 0;
+		i = 0;
+	}
 }
 
-void    sig_handler(int signum, siginfo_t *info, void *context)
+int	main(void)
 {
-    static int  byte = 0;
-    static int  i = 0;
+	struct sigaction	sa;
 
-    if (signum == SIGUSR1)
-        byte += pot(2, i);
-    i++;
-    if (i == 8)
-    {
-        ft_putchar_fd(byte, 1);
-        byte = 0;
-        i = 0;
-    }
-}
-
-int main()
-{
-    t_sa    sa;
-
-    sa = (t_sa) malloc(sizeof(struct sigaction));
-    if (!sa)
-        exit(1);
 	ft_putstr_fd("Server correctly opened [PID = ", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putstr_fd("]\n", 1);
-	sa->sa_sigaction = sig_handler;
-	sa->sa_flags = SA_SIGINFO;
-	sigaction(SIGUSR1, sa, NULL);
-	sigaction(SIGUSR2, sa, NULL);
+	sa.sa_sigaction = sig_handler_srv;
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
 		pause();
-    free(sa);
-	return (0);
 }
