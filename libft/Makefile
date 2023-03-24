@@ -30,7 +30,7 @@ all:	$(NAME)
 	cc -Wall -Wextra -Werror -g -c $?
 
 $(NAME): $(OBJS)
-	ar rcs -r $@ $?
+	ar -r $@ $?
 
 clean:
 	rm -rf $(OBJS) $(BOBJS)

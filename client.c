@@ -15,6 +15,10 @@
 
 void	sig_handler_cli(int signum, siginfo_t *info, void *context)
 {
+	if (signum != SIGUSR1)
+		return;
+	free(context);
+	free(info);
 	ft_putstr_fd("Message received!\n", 1);
 	exit(1);
 }

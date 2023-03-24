@@ -14,13 +14,17 @@ SRCS = server.c	client.c
 
 OBJS = $(SRCS:.c=.o)
 
+CC = gcc
+
+CFLAGS = -Wall -Wextra -Werror -o3
+
 all: libft server client
 
 server:
-	cc server.c libft/libft.a -o server
+	$(CC) $(CFLAGS) server.c libft/libft.a -o server
 
 client:
-	cc client.c libft/libft.a -o client
+	$(CC) $(CFLAGS) client.c libft/libft.a -o client
 
 libft:
 	make -C libft

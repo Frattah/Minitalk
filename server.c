@@ -19,6 +19,7 @@ void	sig_handler_srv(int signum, siginfo_t *info, void *context)
 	static int	i = 0;
 	static int	pot[8] = {1, 2, 4, 8, 16, 32, 64, 128};
 
+	free(context);
 	if (signum == SIGUSR1)
 		byte += pot[i];
 	i++;
